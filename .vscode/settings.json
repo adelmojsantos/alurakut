@@ -1,3 +1,5 @@
 {
-  "cSpell.words": ["adelmojsantos"]
+  "cSpell.words": ["adelmojsantos"],
+  "WillLuke.nextjs.addTypesOnSave": true,
+  "WillLuke.nextjs.hasPrompted": true
 }
