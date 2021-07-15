@@ -1,4 +1,4 @@
-import { useState } from 'react'; `
+import { useEffect, useState } from 'react'; `
 `
 import Box from '../src/components/Box';
 import MainGrid from '../src/components/MainGrid';
@@ -26,21 +26,56 @@ function ProfileSidebar(props) {
   )
 }
 
+function ProfileRelationBox({ title, items }) {
+  return (
+    <ProfileRelationsBoxWrapper>
+      <h2 className="smallTitle">
+        {title} ({items.length})
+      </h2>
+      <ul>
+        {items.map((itemAtual, index) => {
+          return (
+            <li key={index}>
+              <a href={`https://github.com/${itemAtual.login}`} >
+                <img src={`https://github.com/${itemAtual.login}.png`} />
+                <span>{itemAtual.login}</span>
+              </a>
+            </li>
+          )
+        })}
+      </ul>
+    </ProfileRelationsBoxWrapper>
+  )
+}
+
 export default function Home() {
   const [comunidades, setComunidades] = useState([{
     id: new Date().toISOString(),
     title: 'Eu odeio acordar cedo',
     image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg'
   }])
+  const [seguidores, setSeguidores] = useState([])
   const gitHubUser = 'adelmojsantos';
-  const pessoasFavoritas = [
-    'juunegreiros',
-    'omariosouto',
-    'peas',
-    'felipefialho',
-    'Tarcilio-Ba',
-    'diegohfcelestino'
-  ]
+  const [pessoasFavoritas, setPessoasFavoritas] = useState([])
+
+  useEffect(() => {
+    fetch(`https://api.github.com/users/${gitHubUser}/followers`)
+      .then(function (respostaDoServidor) {
+        return respostaDoServidor.json()
+      })
+      .then(function (respostaCompleta) {
+        setSeguidores(respostaCompleta)
+      })
+  }, [])
+  useEffect(() => {
+    fetch(`https://api.github.com/users/${gitHubUser}/following`)
+      .then(function (respostaDoServidor) {
+        return respostaDoServidor.json()
+      })
+      .then(function (respostaCompleta) {
+        setPessoasFavoritas(respostaCompleta)
+      })
+  }, [])
 
   function handleCriaComunidade(e) {
     e.preventDefault();
@@ -98,8 +133,12 @@ export default function Home() {
             </form>
           </Box>
         </div>
+
         <div className="profileRelationsArea"
           style={{ gridArea: 'profileRelationsArea' }}>
+
+          <ProfileRelationBox title="Seguidores" items={seguidores} />
+
           <ProfileRelationsBoxWrapper>
             <h2 className="smallTitle">
               Comunidades ({comunidades.length})
@@ -127,9 +166,9 @@ export default function Home() {
               {pessoasFavoritas.map((githubUser, index) => {
                 return (
                   <li key={index}>
-                    <a href={`/users/${githubUser}`} >
-                      <img src={`https://github.com/${githubUser}.png`} />
-                      <span>{githubUser}</span>
+                    <a href={`https://github.com/${githubUser.login}`} >
+                      <img src={`https://github.com/${githubUser.login}.png`} />
+                      <span>{githubUser.login}</span>
                     </a>
                   </li>
                 )
